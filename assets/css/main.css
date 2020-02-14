@@ -1,3 +1,7 @@
+#query-monitor-main .ep-queries-debug.wpd-queries {
+	padding: 10px !important;
+}
+
 .ep-queries-debug .dashicons {
 	cursor: pointer;
 }
@@ -34,7 +38,6 @@
 	font-weight: bold;
 	color: red;
 }
-
 
 .ep-queries-debug .copy-curl {
 	cursor: pointer;
