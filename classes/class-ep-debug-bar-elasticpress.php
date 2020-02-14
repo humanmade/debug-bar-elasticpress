@@ -21,8 +21,8 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 * Enqueue scripts for front end and admin
 	 */
 	public function enqueue_scripts_styles() {
-		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( '../assets/js/main.js' , __FILE__ ), array( 'jquery' ), EP_DEBUG_VERSION, true );
-		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( '../assets/css/main.css' , __FILE__ ), array(), EP_DEBUG_VERSION );
+		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( 'assets/js/main.js' , dirname( __FILE__ ) ), array( 'jquery' ), EP_DEBUG_VERSION, true );
+		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( 'assets/css/main.css' , dirname( __FILE__ ) ), array(), EP_DEBUG_VERSION );
 	}
 
 	/**
@@ -162,7 +162,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						<?php endif; ?>
 						<a class="copy-curl" data-request="<?php echo esc_attr( addcslashes( $curl_request, '"' ) ); ?>">Copy cURL Request</a>
 					</li><?php
-					
+
 				endforeach;
 
 			?></ol><?php
