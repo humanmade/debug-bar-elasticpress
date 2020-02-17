@@ -36,10 +36,14 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 * Show the contents of the panel
 	 */
 	public function render() {
+
 		if ( ! defined( 'EP_VERSION' ) ) {
 			esc_html_e( 'ElasticPress not activated.', 'debug-bar' );
 			return;
 		}
+
+		// Display debug settings to help troubleshot non-display of query logs.
+		$this->display_debug_settings_info();
 
 		if ( function_exists( 'ep_get_query_log' ) ) {
 			$queries = ep_get_query_log();
@@ -51,6 +55,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 				return;
 			}
 		}
+
 		$total_query_time = 0;
 
 		foreach ( $queries as $query ) {
@@ -58,7 +63,6 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 				$total_query_time += ( $query['time_finish'] - $query['time_start'] );
 			}
 		}
-
 		?>
 
 		<h2><?php printf( __( '<span>Total ElasticPress Queries:</span> %d', 'debug-bar' ), count( $queries ) ); ?></h2>
@@ -170,4 +174,73 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 		endif;
 	}
 
+	/**
+	 * Display debug settings that effect if Elastic Press logs are visible or not.
+	 */
+	protected function display_debug_settings_info() {
+		?>
+		<div class="qm-boxed">
+			<section>
+				<h3><?php esc_html_e( 'Debug Settings', 'debug-bar' ); ?></h3>
+				<p>
+					<?php esc_html_e( 'All of the following debug settings should be enabled for search query logs to be displayed', 'debug-bar' ); ?>
+				</p>
+				<table>
+					<tbody>
+					<tr>
+						<?php
+						// WP_DEBUG - is inactive.
+						$status = false;
+						$message = wp_kses(
+							sprintf( __( '%s is either not defined or turned off', 'debug-bar' ), '<code>WP_DEBUG</code>' ),
+							[ 'code' => [] ]
+						);
+
+						// WP_DEBUG - is active.
+						if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+							$status  = true;
+							$message = wp_kses(
+								sprintf( __( '%s is defined', 'debug-bar' ), '<code>WP_DEBUG</code>' ),
+								[ 'code' => [] ]
+							);
+						}
+						?>
+						<td>
+							<?php echo $status ? '&#x2714;' : '&#10060;'; ?>
+						</td>
+						<td>
+							<?php echo $message; ?>
+						</td>
+					</tr>
+					<tr>
+						<?php
+						// WP_EP_DEBUG - is inactive.
+						$status = false;
+						$message = wp_kses(
+							sprintf( __( '%s is either not defined or turned off', 'debug-bar' ), '<code>WP_EP_DEBUG</code>' ),
+							[ 'code' => [] ]
+						);
+
+						// WP_EP_DEBUG - is active.
+						if ( defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG ) {
+							$status  = true;
+							$message = wp_kses(
+								sprintf( __( '%s is defined', 'debug-bar' ), '<code>WP_EP_DEBUG</code>' ),
+								[ 'code' => [] ]
+							);
+						}
+						?>
+						<td>
+							<?php echo $status ? '&#x2714;' : '&#10060;'; ?>
+						</td>
+						<td>
+							<?php echo $message; ?>
+						</td>
+					</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+		<?php
+	}
 }

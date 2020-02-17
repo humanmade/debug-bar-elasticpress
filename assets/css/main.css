@@ -1,5 +1,11 @@
-#query-monitor-main .ep-queries-debug.wpd-queries {
-	padding: 10px !important;
+#query-monitor-main #qm-debug_bar_ep_debug_bar_elasticpress {
+	padding: 10px 20px;
+}
+
+#query-monitor-main #qm-debug_bar_ep_debug_bar_elasticpress .qm-boxed h3,
+#query-monitor-main #qm-debug_bar_ep_debug_bar_elasticpress .qm-boxed h4 {
+	font-size: 14px !important;
+	margin: 0 0 15px 0 !important;
 }
 
 .ep-queries-debug .dashicons {
