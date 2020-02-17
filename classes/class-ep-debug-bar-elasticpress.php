@@ -7,6 +7,10 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 */
 	public $title;
 
+	protected $check_mark = '&#x2714;';
+	protected $cross_mark = '&#10060;';
+	protected $exclamation_mark = '&#10071;';
+
 	/**
 	 * Initial debug bar stuff
 	 */
@@ -42,8 +46,8 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 			return;
 		}
 
-		// Display debug settings to help troubleshot non-display of query logs.
-		$this->display_debug_settings_info();
+		// Display debug info to help troubleshot Elastic Press query logs not being displayed.
+		$this->display_debugging_info();
 
 		if ( function_exists( 'ep_get_query_log' ) ) {
 			$queries = ep_get_query_log();
@@ -175,68 +179,87 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	}
 
 	/**
-	 * Display debug settings that effect if Elastic Press logs are visible or not.
+	 * Display debug info that effects the Elastic Press logs being visible or not.
 	 */
-	protected function display_debug_settings_info() {
+	protected function display_debugging_info() {
 		?>
 		<div class="qm-boxed">
 			<section>
-				<h3><?php esc_html_e( 'Debug Settings', 'debug-bar' ); ?></h3>
+				<h3><?php esc_html_e( 'Debug Info', 'debug-bar' ); ?></h3>
 				<p>
-					<?php esc_html_e( 'One of the following debug settings should be enabled for search query logs to be displayed', 'debug-bar' ); ?>
+					<?php esc_html_e( 'Elastic Press query logs not being displayed can be due to one of the following reasons:', 'debug-bar' ); ?>
 				</p>
 				<table>
 					<tbody>
-					<tr>
 						<?php
-						// WP_DEBUG - is inactive.
-						$status = false;
-						$message = wp_kses(
-							sprintf( __( '%s is either not defined or turned off', 'debug-bar' ), '<code>WP_DEBUG</code>' ),
-							[ 'code' => [] ]
-						);
-
-						// WP_DEBUG - is active.
-						if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-							$status  = true;
-							$message = wp_kses(
-								sprintf( __( '%s is defined', 'debug-bar' ), '<code>WP_DEBUG</code>' ),
-								[ 'code' => [] ]
-							);
-						}
-						?>
-						<td>
-							<?php echo $status ? '&#x2714;' : '&#10060;'; ?>
-						</td>
-						<td>
-							<?php echo $message; ?>
-						</td>
-					</tr>
-					<tr>
+						if ( ! defined( WP_DEBUG ) || ! WP_DEBUG || ! defined( WP_EP_DEBUG ) || ! WP_EP_DEBUG ) :
+							?>
+						<tr>
+							<td><?php echo $this->cross_mark; ?></td>
+							<td>
+								<?php
+								echo wp_kses(
+									sprintf( __( 'Either %s or %s should be enabled', 'debug-bar' ), '<code>WP_DEBUG</code>', '<code>WP_EP_DEBUG</code>' ),
+									[ 'code' => [] ]
+								);
+								?>
+							</td>
+						</tr>
 						<?php
-						// WP_EP_DEBUG - is inactive.
-						$status = false;
-						$message = wp_kses(
-							sprintf( __( '%s is either not defined or turned off', 'debug-bar' ), '<code>WP_EP_DEBUG</code>' ),
-							[ 'code' => [] ]
-						);
-
-						// WP_EP_DEBUG - is active.
-						if ( defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG ) {
-							$status  = true;
-							$message = wp_kses(
-								sprintf( __( '%s is defined', 'debug-bar' ), '<code>WP_EP_DEBUG</code>' ),
-								[ 'code' => [] ]
-							);
-						}
+						endif;
 						?>
-						<td>
-							<?php echo $status ? '&#x2714;' : '&#10060;'; ?>
-						</td>
-						<td>
-							<?php echo $message; ?>
-						</td>
-					</tr>
+
+						<tr>
+							<?php
+							// EP is currently indexing.
+							if ( ep_is_indexing() ) :
+							// if ( false ) :
+							?>
+							<td><?php echo $this->exclamation_mark; ?></td>
+							<td>
+								<?php esc_html_e( 'Data is being currently indexed. Please try after it is finished', 'debug-bar' ); ?>
+							</td>
+							<?php
+							else :
+							?>
+
+							<td><?php echo $this->check_mark; ?></td>
+							<td>
+								<?php esc_html_e( 'Data has been indexed', 'debug-bar' ); ?>
+							</td>
+							<?php
+							endif;
+							?>
+						</tr>
+
+						<tr>
+							<?php
+							// EP is currently indexing via WP CLI.
+							if ( ep_is_indexing_wpcli() ) :
+							// if ( false ) :
+								?>
+								<td><?php echo $this->exclamation_mark; ?></td>
+								<td>
+									<?php
+									echo wp_kses(
+										sprintf( __( 'Data is being currently indexed via %s. Please try after it is finished', 'debug-bar' ), '<code>WP CLI</code>' ),
+										[ 'code' => [] ]
+									);
+									?>
+								</td>
+							<?php
+							else :
+								?>
+
+								<td><?php echo $this->check_mark; ?></td>
+								<td>
+									<?php esc_html_e( 'Data has been indexed', 'debug-bar' ); ?>
+								</td>
+							<?php
+							endif;
+							?>
+						</tr>
+
 					</tbody>
 				</table>
 			</section>
