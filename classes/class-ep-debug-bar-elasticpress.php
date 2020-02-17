@@ -183,7 +183,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 			<section>
 				<h3><?php esc_html_e( 'Debug Settings', 'debug-bar' ); ?></h3>
 				<p>
-					<?php esc_html_e( 'All of the following debug settings should be enabled for search query logs to be displayed', 'debug-bar' ); ?>
+					<?php esc_html_e( 'One of the following debug settings should be enabled for search query logs to be displayed', 'debug-bar' ); ?>
 				</p>
 				<table>
 					<tbody>
