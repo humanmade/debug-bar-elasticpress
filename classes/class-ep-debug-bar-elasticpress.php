@@ -204,6 +204,29 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 * Display debug info that effects the Elastic Press logs being visible or not.
 	 */
 	protected function display_debugging_info() {
+		$errors = [];
+
+		// Debug constants are not set or enabled.
+		$is_wp_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
+		$is_wp_ep_debug = defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG;
+
+		// Display error message only if both WP_DEBUG and WP_EP_DEBUG are turned off.
+		if ( ! $is_wp_debug && ! $is_wp_ep_debug ) {
+			$errors[] = sprintf(
+				__( 'Either %s or %s should be defined and set to true', 'debug-bar' ),
+				'<code>WP_DEBUG</code>',
+				'<code>WP_EP_DEBUG</code>'
+			);
+		}
+
+		// Data is being currently indexed.
+		if ( ep_is_indexing() || ep_is_indexing_wpcli() ) {
+			$errors[] = __( 'Currently indexing content, queries may fall back to regular database queries', 'debug-bar' );
+		}
+
+		if ( ! $errors ) {
+			return;
+		}
 		?>
 		<div class="qm-boxed">
 			<section>
@@ -213,45 +236,16 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 				</p>
 				<table>
 					<tbody>
-						<?php
-						$is_wp_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
-						$is_wp_ep_debug = defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG;
-
-						// Display error message only if both WP_DEBUG and WP_EP_DEBUG are turned off.
-						if ( ! $is_wp_debug && ! $is_wp_ep_debug ) :
-							?>
 						<tr>
-							<td><?php echo '&#10060;'; // cross mark. ?></td>
-							<td>
-								<?php
-								echo wp_kses(
-									sprintf(
-										__( 'Either %s or %s should be defined and set to true', 'debug-bar' ),
-										'<code>WP_DEBUG</code>',
-										'<code>WP_EP_DEBUG</code>'
-									),
-									[ 'code' => [] ]
-								);
-								?>
-							</td>
-						</tr>
-						<?php
-						endif;
-						?>
-
-						<?php
-						// Data is being currently indexed.
-						if ( ep_is_indexing() || ep_is_indexing_wpcli() ) :
+							<?php
+							foreach ( $errors as $error ) :
 							?>
-						<tr>
-							<td><?php echo '&#10071;'; // exclamation mark. ?></td>
-							<td>
-								<?php esc_html_e( 'Index is currently in sync', 'debug-bar' ); ?>
-							</td>
+								<td>⚠️</td>
+								<td><?php echo wp_kses( $error, [ 'code' => [] ] ); ?></td>
+							<?php
+							endforeach;
+							?>
 						</tr>
-						<?php
-						endif;
-						?>
 					</tbody>
 				</table>
 			</section>
