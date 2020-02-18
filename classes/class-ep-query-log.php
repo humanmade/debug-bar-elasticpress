@@ -21,7 +21,7 @@ class EP_Debug_Bar_Query_Log {
 
 	/**
 	 * Save logging settings
-	 * 
+	 *
 	 * @since 1.3
 	 */
 	public function action_admin_init() {
@@ -67,7 +67,7 @@ class EP_Debug_Bar_Query_Log {
 
 	/**
 	 * Only log delete index error if not 2xx AND not 404
-	 * 
+	 *
 	 * @param  array $query
 	 * @since  1.3
 	 * @return bool
@@ -80,7 +80,7 @@ class EP_Debug_Bar_Query_Log {
 
 	/**
 	 * Log all non-200 requests
-	 * 
+	 *
 	 * @param  array $query
 	 * @since  1.3
 	 * @return bool
@@ -89,7 +89,7 @@ class EP_Debug_Bar_Query_Log {
 		if ( is_wp_error( $query['request'] ) ) {
 			return true;
 		}
-		
+
 		$response_code = wp_remote_retrieve_response_code( $query['request'] );
 
 		return ( $response_code < 200 || $response_code > 299 );
@@ -97,7 +97,7 @@ class EP_Debug_Bar_Query_Log {
 
 	/**
 	 * Conditionally save a query to the log which is stored in options. This is a big performance hit so be careful.
-	 * 
+	 *
 	 * @param  array $query
 	 * @param  string $type
 	 * @since  1.3
@@ -116,7 +116,7 @@ class EP_Debug_Bar_Query_Log {
 		/**
 		 * This filter allows you to map query types to callables. If the callable returns true,
 		 * that query will be logged.
-		 * 
+		 *
 		 * @var    array
 		 * @since  1.3
 		 */
@@ -161,7 +161,7 @@ class EP_Debug_Bar_Query_Log {
 
 	/**
 	 * Output query log page
-	 * 
+	 *
 	 * @since 1.3
 	 */
 	public function screen_options() {
@@ -339,19 +339,19 @@ class EP_Debug_Bar_Query_Log {
 	}
 
 	/**
-     * Return an instance of the current class, create one if it doesn't exist
-     *
+	 * Return an instance of the current class, create one if it doesn't exist
+	 *
+	 * @return object
 	 * @since 1.3
-     * @return object
-     */
-    public static function factory() {
-    	static $instance;
+	 */
+	public static function factory() {
+		static $instance;
 
-        if ( empty( $instance ) ) {
-            $instance = new self();
-            $instance->setup();
-        }
+		if ( empty( $instance ) ) {
+			$instance = new self();
+			$instance->setup();
+		}
 
-        return $instance;
-    }
+		return $instance;
+	}
 }
