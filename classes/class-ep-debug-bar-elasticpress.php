@@ -7,10 +7,6 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 */
 	public $title;
 
-	protected $check_mark = '&#x2714;';
-	protected $cross_mark = '&#10060;';
-	protected $exclamation_mark = '&#10071;';
-
 	/**
 	 * Initial debug bar stuff
 	 */
@@ -201,7 +197,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 							$is_debug_errors = true;
 							?>
 						<tr>
-							<td><?php echo $this->cross_mark; ?></td>
+							<td><?php echo '&#10060;'; // cross mark. ?></td>
 							<td>
 								<?php
 								echo wp_kses(
@@ -221,7 +217,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 							$is_debug_errors = true;
 							?>
 						<tr>
-							<td><?php echo $this->exclamation_mark; ?></td>
+							<td><?php echo '&#10071;'; // exclamation mark. ?></td>
 							<td>
 								<?php esc_html_e( 'Index is currently in sync', 'debug-bar' ); ?>
 							</td>
@@ -235,7 +231,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						if ( ! $is_debug_errors ) :
 							?>
 							<tr>
-								<td><?php echo $this->check_mark; ?></td>
+								<td><?php echo '&#x2714;'; // check mark. ?></td>
 								<td>
 									<?php esc_html_e( 'All debug settings required to display query logs are set', 'debug-bar' ); ?>
 								</td>
