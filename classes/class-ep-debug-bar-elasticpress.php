@@ -192,7 +192,11 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 				<table>
 					<tbody>
 						<?php
-						if ( ! defined( WP_DEBUG ) || ! WP_DEBUG || ! defined( WP_EP_DEBUG ) || ! WP_EP_DEBUG ) :
+						$is_wp_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
+						$is_wp_ep_debug = defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG;
+
+						// Display error message only if both WP_DEBUG and WP_EP_DEBUG are off.
+						if ( ! ( $is_wp_debug || $is_wp_ep_debug ) ) :
 							?>
 						<tr>
 							<td><?php echo $this->cross_mark; ?></td>
