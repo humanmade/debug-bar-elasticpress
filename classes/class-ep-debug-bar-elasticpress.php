@@ -21,8 +21,8 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 * Enqueue scripts for front end and admin
 	 */
 	public function enqueue_scripts_styles() {
-		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( '../assets/js/main.js' , __FILE__ ), array( 'jquery' ), EP_DEBUG_VERSION, true );
-		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( '../assets/css/main.css' , __FILE__ ), array(), EP_DEBUG_VERSION );
+		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( 'assets/js/main.js' , dirname( __FILE__ ) ), array( 'jquery' ), EP_DEBUG_VERSION, true );
+		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( 'assets/css/main.css' , dirname( __FILE__ ) ), array(), EP_DEBUG_VERSION );
 	}
 
 	/**
@@ -36,10 +36,14 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 * Show the contents of the panel
 	 */
 	public function render() {
+
 		if ( ! defined( 'EP_VERSION' ) ) {
 			esc_html_e( 'ElasticPress not activated.', 'debug-bar' );
 			return;
 		}
+
+		// Display debug info to help troubleshot Elastic Press query logs not being displayed.
+		$this->display_debugging_info();
 
 		if ( function_exists( 'ep_get_query_log' ) ) {
 			$queries = ep_get_query_log();
@@ -51,6 +55,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 				return;
 			}
 		}
+
 		$total_query_time = 0;
 
 		foreach ( $queries as $query ) {
@@ -58,12 +63,26 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 				$total_query_time += ( $query['time_finish'] - $query['time_start'] );
 			}
 		}
-
 		?>
 
-		<h2><?php printf( __( '<span>Total ElasticPress Queries:</span> %d', 'debug-bar' ), count( $queries ) ); ?></h2>
-		<h2><?php printf( __( '<span>Total Blocking ElasticPress Query Time:</span> %d ms', 'debug-bar' ), (int) ( $total_query_time * 1000 ) ); ?></h2><?php
+		<h2>
+			<?php
+			echo wp_kses(
+				sprintf( __( '<span>Total ElasticPress Queries:</span> %d', 'debug-bar' ), count( $queries ) ),
+				[ 'span' => [] ]
+			);
+			?>
+		</h2>
+		<h2>
+			<?php
+			echo wp_kses(
+				sprintf( __( '<span>Total Blocking ElasticPress Query Time:</span> %d ms', 'debug-bar' ), (int) ( $total_query_time * 1000 ) ),
+				[ 'span' => [] ]
+			);
+			?>
+		</h2>
 
+		<?php
 		if ( empty( $queries ) ) :
 
 			?><ol class="wpd-queries">
@@ -104,9 +123,15 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 
 						<div class="ep-query-time"><?php
 							if ( ! empty( $query_time ) ) :
-								printf( __( '<strong>Time Taken:</strong> %d ms', 'debug-bar' ), ( $query_time * 1000 ) );
+								echo wp_kses(
+									sprintf( __( '<strong>Time Taken:</strong> %d ms', 'debug-bar' ), ( $query_time * 1000 ) ),
+									[ 'strong' => [] ]
+								);
 							else :
-								_e( '<strong>Time Taken:</strong> -', 'debug-bar' );
+								echo wp_kses(
+									__( '<strong>Time Taken:</strong> -', 'debug-bar' ),
+									[ 'strong' => [] ]
+								);
 							endif;
 						?></div>
 
@@ -144,7 +169,12 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						<?php if ( ! is_wp_error( $query['request'] ) ) : ?>
 
 							<div class="ep-query-response-code">
-								<?php printf( __( '<strong>Query Response Code:</strong> HTTP %d', 'debug-bar' ), (int) $response ); ?>
+								<?php
+								echo wp_kses(
+									sprintf( __( '<strong>Query Response Code:</strong> HTTP %d', 'debug-bar' ), (int) $response ),
+									[ 'strong' => [] ]
+								);
+								?>
 							</div>
 
 							<div class="ep-query-result">
@@ -162,7 +192,7 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						<?php endif; ?>
 						<a class="copy-curl" data-request="<?php echo esc_attr( addcslashes( $curl_request, '"' ) ); ?>">Copy cURL Request</a>
 					</li><?php
-					
+
 				endforeach;
 
 			?></ol><?php
@@ -170,4 +200,56 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 		endif;
 	}
 
+	/**
+	 * Display debug info that effects the Elastic Press logs being visible or not.
+	 */
+	protected function display_debugging_info() {
+		$errors = [];
+
+		// Debug constants are not set or enabled.
+		$is_wp_debug = defined( 'WP_DEBUG' ) && WP_DEBUG;
+		$is_wp_ep_debug = defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG;
+
+		// Display error message only if both WP_DEBUG and WP_EP_DEBUG are turned off.
+		if ( ! $is_wp_debug && ! $is_wp_ep_debug ) {
+			$errors[] = sprintf(
+				__( 'Either %s or %s should be defined and set to true', 'debug-bar' ),
+				'<code>WP_DEBUG</code>',
+				'<code>WP_EP_DEBUG</code>'
+			);
+		}
+
+		// Data is being currently indexed.
+		if ( ep_is_indexing() || ep_is_indexing_wpcli() ) {
+			$errors[] = __( 'Currently indexing content, queries may fall back to regular database queries', 'debug-bar' );
+		}
+
+		if ( ! $errors ) {
+			return;
+		}
+		?>
+		<div class="qm-boxed">
+			<section>
+				<h3><?php esc_html_e( 'Debug Info', 'debug-bar' ); ?></h3>
+				<p>
+					<?php esc_html_e( 'Elastic Press query logs not being displayed can be due to one of the following reasons:', 'debug-bar' ); ?>
+				</p>
+				<table>
+					<tbody>
+						<tr>
+							<?php
+							foreach ( $errors as $error ) :
+							?>
+								<td>⚠️</td>
+								<td><?php echo wp_kses( $error, [ 'code' => [] ] ); ?></td>
+							<?php
+							endforeach;
+							?>
+						</tr>
+					</tbody>
+				</table>
+			</section>
+		</div>
+		<?php
+	}
 }

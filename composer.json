@@ -1,5 +1,5 @@
 {
-  "name": "10up/debug-bar-elasticpress",
+  "name": "humanmade/debug-bar-elasticpress",
   "description": "Extends the Debug Bar plugin for usage with ElasticPress",
   "type": "wordpress-plugin",
   "keywords": ["wordpress", "plugin", "elasticsearch", "elasticpress", "search", "debug", "debug bar"],
