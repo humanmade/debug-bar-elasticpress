@@ -204,7 +204,6 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	 * Display debug info that effects the Elastic Press logs being visible or not.
 	 */
 	protected function display_debugging_info() {
-		$is_debug_errors = false;
 		?>
 		<div class="qm-boxed">
 			<section>
@@ -219,15 +218,18 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						$is_wp_ep_debug = defined( 'WP_EP_DEBUG' ) && WP_EP_DEBUG;
 
 						// Display error message only if both WP_DEBUG and WP_EP_DEBUG are turned off.
-						if ( ! ( $is_wp_debug || $is_wp_ep_debug ) ) :
-							$is_debug_errors = true;
+						if ( ! $is_wp_debug && ! $is_wp_ep_debug ) :
 							?>
 						<tr>
 							<td><?php echo '&#10060;'; // cross mark. ?></td>
 							<td>
 								<?php
 								echo wp_kses(
-									sprintf( __( 'Either %s or %s should be defined and set to true', 'debug-bar' ), '<code>WP_DEBUG</code>', '<code>WP_EP_DEBUG</code>' ),
+									sprintf(
+										__( 'Either %s or %s should be defined and set to true', 'debug-bar' ),
+										'<code>WP_DEBUG</code>',
+										'<code>WP_EP_DEBUG</code>'
+									),
 									[ 'code' => [] ]
 								);
 								?>
@@ -240,7 +242,6 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						<?php
 						// Data is being currently indexed.
 						if ( ep_is_indexing() || ep_is_indexing_wpcli() ) :
-							$is_debug_errors = true;
 							?>
 						<tr>
 							<td><?php echo '&#10071;'; // exclamation mark. ?></td>
@@ -251,21 +252,6 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						<?php
 						endif;
 						?>
-
-						<?php
-						// No debug errors to display.
-						if ( ! $is_debug_errors ) :
-							?>
-							<tr>
-								<td><?php echo '&#x2714;'; // check mark. ?></td>
-								<td>
-									<?php esc_html_e( 'All debug settings required to display query logs are set', 'debug-bar' ); ?>
-								</td>
-							</tr>
-						<?php
-						endif;
-						?>
-
 					</tbody>
 				</table>
 			</section>
