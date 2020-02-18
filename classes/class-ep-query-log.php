@@ -201,7 +201,14 @@ class EP_Debug_Bar_Query_Log {
 									<option <?php selected( 1, $enabled ); ?> value="1"><?php esc_html_e( 'Enable', 'debug-bar' ); ?></option>
 								</select>
 								<br>
-								<span class="description"><?php _e( 'Note that query logging can have <strong>severe</strong> performance implications on your website. We generally recommend only enabling logging during dashboard indexing and disabling after.', 'debug-bar' ); ?></span>
+								<span class="description">
+									<?php
+									echo wp_kses(
+										__( 'Note that query logging can have <strong>severe</strong> performance implications on your website. We generally recommend only enabling logging during dashboard indexing and disabling after.', 'debug-bar' ),
+										[ 'strong' => [] ]
+									);
+									?>
+								</span>
 							</td>
 						</tr>
 					</tbody>
@@ -209,7 +216,7 @@ class EP_Debug_Bar_Query_Log {
 
 				<p class="submit">
 					<input type="submit" name="submit" id="submit" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'debug-bar' ); ?>">
-					
+
 					<?php if ( ! empty( $log ) ) : ?>
 						<a class="button" href="<?php echo esc_url( add_query_arg( array( 'ep_clear_query_log' => wp_create_nonce( 'ep_clear_query_log' ) ) ) ); ?>"><?php esc_html_e( 'Empty Log', 'debug-bar' ); ?></a>
 					<?php endif; ?>
@@ -255,9 +262,15 @@ class EP_Debug_Bar_Query_Log {
 
 							<div class="ep-query-time"><?php
 								if ( ! empty( $query_time ) ) :
-									printf( __( '<strong>Time Taken:</strong> %d ms', 'debug-bar' ), ( $query_time * 1000 ) );
+									echo wp_kses(
+										sprintf( __( '<strong>Time Taken:</strong> %d ms', 'debug-bar' ), ( $query_time * 1000 ) ),
+										[ 'strong' => [] ]
+									);
 								else :
-									_e( '<strong>Time Taken:</strong> -', 'debug-bar' );
+									echo wp_kses(
+										__( '<strong>Time Taken:</strong> -', 'debug-bar' ),
+										[ 'strong' => [] ]
+									);
 								endif;
 							?></div>
 
@@ -295,7 +308,12 @@ class EP_Debug_Bar_Query_Log {
 							<?php if ( ! is_wp_error( $log_entry['query']['request'] ) ) : ?>
 
 								<div class="ep-query-response-code">
-									<?php printf( __( '<strong>Query Response Code:</strong> HTTP %d', 'debug-bar' ), (int) $response ); ?>
+									<?php
+									echo wp_kses(
+										sprintf( __( '<strong>Query Response Code:</strong> HTTP %d', 'debug-bar' ), (int) $response ),
+										[ 'strong' => [] ]
+									);
+									?>
 								</div>
 
 								<div class="ep-query-result">
@@ -311,7 +329,7 @@ class EP_Debug_Bar_Query_Log {
 									<pre class="query-errors"><?php echo esc_html( stripslashes( json_encode( $log_entry['query']['request']->errors, JSON_PRETTY_PRINT ) ) ); ?></pre>
 								</div>
 							<?php endif; ?>
-							<a class="copy-curl" data-request="<?php echo esc_attr( addcslashes( $curl_request, '"' ) ); ?>">Copy cURL Request</a>
+							<a class="copy-curl" data-request="<?php echo esc_attr( addcslashes( $curl_request, '"' ) ); ?>"><?php esc_html_e( 'Copy cURL Request', 'debug-bar' ); ?></a>
 						</li>
 					<?php endforeach; ?>
 				</ol>

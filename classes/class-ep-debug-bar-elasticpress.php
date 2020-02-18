@@ -65,9 +65,24 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 		}
 		?>
 
-		<h2><?php printf( __( '<span>Total ElasticPress Queries:</span> %d', 'debug-bar' ), count( $queries ) ); ?></h2>
-		<h2><?php printf( __( '<span>Total Blocking ElasticPress Query Time:</span> %d ms', 'debug-bar' ), (int) ( $total_query_time * 1000 ) ); ?></h2><?php
+		<h2>
+			<?php
+			echo wp_kses(
+				sprintf( __( '<span>Total ElasticPress Queries:</span> %d', 'debug-bar' ), count( $queries ) ),
+				[ 'span' => [] ]
+			);
+			?>
+		</h2>
+		<h2>
+			<?php
+			echo wp_kses(
+				sprintf( __( '<span>Total Blocking ElasticPress Query Time:</span> %d ms', 'debug-bar' ), (int) ( $total_query_time * 1000 ) ),
+				[ 'span' => [] ]
+			);
+			?>
+		</h2>
 
+		<?php
 		if ( empty( $queries ) ) :
 
 			?><ol class="wpd-queries">
@@ -108,9 +123,15 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 
 						<div class="ep-query-time"><?php
 							if ( ! empty( $query_time ) ) :
-								printf( __( '<strong>Time Taken:</strong> %d ms', 'debug-bar' ), ( $query_time * 1000 ) );
+								echo wp_kses(
+									sprintf( __( '<strong>Time Taken:</strong> %d ms', 'debug-bar' ), ( $query_time * 1000 ) ),
+									[ 'strong' => [] ]
+								);
 							else :
-								_e( '<strong>Time Taken:</strong> -', 'debug-bar' );
+								echo wp_kses(
+									__( '<strong>Time Taken:</strong> -', 'debug-bar' ),
+									[ 'strong' => [] ]
+								);
 							endif;
 						?></div>
 
@@ -148,7 +169,12 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 						<?php if ( ! is_wp_error( $query['request'] ) ) : ?>
 
 							<div class="ep-query-response-code">
-								<?php printf( __( '<strong>Query Response Code:</strong> HTTP %d', 'debug-bar' ), (int) $response ); ?>
+								<?php
+								echo wp_kses(
+									sprintf( __( '<strong>Query Response Code:</strong> HTTP %d', 'debug-bar' ), (int) $response ),
+									[ 'strong' => [] ]
+								);
+								?>
 							</div>
 
 							<div class="ep-query-result">
