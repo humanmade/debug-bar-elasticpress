@@ -4,7 +4,7 @@ Tags: debug, debug bar, elasticpress, elasticsearch
 Requires at least: 3.7.1
 Tested up to: 5.1
 Requires PHP: 5.4
-Stable tag: 1.4
+Stable tag: 1.6
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,12 @@ Adds an [ElasticPress](https://wordpress.org/plugins/elasticpress) panel to the 
 3. Install the plugin in WordPress.
 
 == Changelog ==
+
+= 1.6 =
+* Support for ElasticPress 3+
+
+= 1.5 =
+* Clean up, support for Query Monitor 3.2+
 
 = 1.4 =
 * Support ElasticPress 3.0+
