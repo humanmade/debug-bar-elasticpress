@@ -1,5 +1,7 @@
 <?php
 
+use ElasticPress\Utils;
+
 class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 
 	/**
@@ -220,7 +222,15 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 		}
 
 		// Data is being currently indexed.
-		if ( ep_is_indexing() || ep_is_indexing_wpcli() ) {
+		$is_indexing = false;
+		if ( function_exists( 'ep_is_indexing' ) && function_exists( 'ep_is_indexing_wpcli' ) ) {
+			$is_indexing = ep_is_indexing() || ep_is_indexing_wpcli();
+		}
+		if ( function_exists( 'ElasticPress\\Utils\\is_indexing' ) && function_exists( 'ElasticPress\\Utils\\is_indexing_wpcli' ) ) {
+			$is_indexing = Utils\is_indexing() || Utils\is_indexing_wpcli();
+		}
+
+		if ( $is_indexing ) {
 			$errors[] = __( 'Currently indexing content, queries may fall back to regular database queries', 'debug-bar' );
 		}
 
