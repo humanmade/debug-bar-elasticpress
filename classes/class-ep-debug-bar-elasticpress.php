@@ -15,7 +15,8 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	public function init() {
 		$this->title( esc_html__( 'ElasticPress', 'debug-bar' ) );
 
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
+		add_action( 'qm/output/enqueued-assets', array( $this, 'enqueue_scripts_styles' ) );
+		add_action( 'debug_bar_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 	}
 
