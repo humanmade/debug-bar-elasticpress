@@ -15,17 +15,44 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 	public function init() {
 		$this->title( esc_html__( 'ElasticPress', 'debug-bar' ) );
 
+		/*
+		 * Query Monitor: fires from QM_Dispatcher_Html::enqueue_assets(), immediately
+		 * after the `query-monitor` handles are registered, and only on requests where
+		 * QM actually renders.
+		 *
+		 * Debug Bar: fires from Debug_Bar::enqueue().
+		 *
+		 * A generic `admin_enqueue_scripts` hook is deliberately NOT used. The panel is
+		 * constructed on every request, but QM only registers its assets when
+		 * QM_Dispatcher_Html::user_can_view() and ::request_supported() both pass. For
+		 * a user without the `view_query_monitor` capability, or on the Site Editor,
+		 * iframed/async requests, the Customizer preview or the interim login screen,
+		 * the `query-monitor` handle is never registered -- and enqueuing against it
+		 * triggers _doing_it_wrong() from WP_Dependencies::all_deps() in WordPress
+		 * 6.9.1+.
+		 */
 		add_action( 'qm/output/enqueued-assets', array( $this, 'enqueue_scripts_styles' ) );
 		add_action( 'debug_bar_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 	}
 
 	/**
 	 * Enqueue scripts for front end and admin
 	 */
 	public function enqueue_scripts_styles() {
-		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( 'assets/js/main.js' , dirname( __FILE__ ) ), array( 'jquery', 'query-monitor' ), EP_DEBUG_VERSION, true );
-		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( 'assets/css/main.css' , dirname( __FILE__ ) ), array( 'query-monitor' ), EP_DEBUG_VERSION );
+		$script_deps = array( 'jquery' );
+		$style_deps  = array();
+
+		// Only declare the dependency when Query Monitor has actually registered its assets.
+		if ( wp_script_is( 'query-monitor', 'registered' ) ) {
+			$script_deps[] = 'query-monitor';
+		}
+
+		if ( wp_style_is( 'query-monitor', 'registered' ) ) {
+			$style_deps[] = 'query-monitor';
+		}
+
+		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( 'assets/js/main.js' , dirname( __FILE__ ) ), $script_deps, EP_DEBUG_VERSION, true );
+		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( 'assets/css/main.css' , dirname( __FILE__ ) ), $style_deps, EP_DEBUG_VERSION );
 	}
 
 	/**
