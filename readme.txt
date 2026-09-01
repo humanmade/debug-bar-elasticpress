@@ -4,7 +4,7 @@ Tags: debug, debug bar, elasticpress, elasticsearch
 Requires at least: 3.7.1
 Tested up to: 5.1
 Requires PHP: 5.4
-Stable tag: 1.6
+Stable tag: 1.6.4
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,6 +26,17 @@ Adds an [ElasticPress](https://wordpress.org/plugins/elasticpress) panel to the 
 3. Install the plugin in WordPress.
 
 == Changelog ==
+
+= 1.6.4 =
+* Don't enqueue against the unregistered `query-monitor` handle #9
+* Bump `EP_DEBUG_VERSION`, which had been stale at 1.6.0 since three releases
+
+= 1.6.3 =
+* Don't strip slashes when outputting pretty printed JSON #7
+* Prevent scripts and styles outputting on front end for unauthenticated requests not using Query Monitor #8
+
+= 1.6.1 =
+* Prevent scripts and styles being enqueued when Query Monitor is not present #6
 
 = 1.6 =
 * Support for ElasticPress 3+
