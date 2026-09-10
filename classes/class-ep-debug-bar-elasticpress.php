@@ -17,15 +17,25 @@ class EP_Debug_Bar_ElasticPress extends Debug_Bar_Panel {
 
 		add_action( 'qm/output/enqueued-assets', array( $this, 'enqueue_scripts_styles' ) );
 		add_action( 'debug_bar_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts_styles' ) );
 	}
 
 	/**
 	 * Enqueue scripts for front end and admin
 	 */
 	public function enqueue_scripts_styles() {
-		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( 'assets/js/main.js' , dirname( __FILE__ ) ), array( 'jquery', 'query-monitor' ), EP_DEBUG_VERSION, true );
-		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( 'assets/css/main.css' , dirname( __FILE__ ) ), array( 'query-monitor' ), EP_DEBUG_VERSION );
+		$script_deps = array( 'jquery' );
+		$style_deps  = array();
+
+		if ( wp_script_is( 'query-monitor', 'registered' ) ) {
+			$script_deps[] = 'query-monitor';
+		}
+
+		if ( wp_style_is( 'query-monitor', 'registered' ) ) {
+			$style_deps[] = 'query-monitor';
+		}
+
+		wp_enqueue_script( 'debug-bar-elasticpress', plugins_url( 'assets/js/main.js' , dirname( __FILE__ ) ), $script_deps, EP_DEBUG_VERSION, true );
+		wp_enqueue_style( 'debug-bar-elasticpress', plugins_url( 'assets/css/main.css' , dirname( __FILE__ ) ), $style_deps, EP_DEBUG_VERSION );
 	}
 
 	/**
